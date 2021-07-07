@@ -28,9 +28,8 @@ class DjangoMutationBase:
         return arguments + super().arguments
 
     @django_resolver
-    def get_result(self, source, info, kwargs):
-        kwargs = convert_arguments(kwargs, self.arguments)
-        return self.resolver(info=info, source=source, **kwargs)
+    def get_result(self, source, info, args, kwargs):
+        return self.resolver(info=info, source=source, *args, **kwargs)
 
     def get_wrapped_resolver(self):
         self.post_init()
