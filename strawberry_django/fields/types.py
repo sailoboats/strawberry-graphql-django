@@ -67,7 +67,6 @@ field_type_map = {
     fields.PositiveIntegerField: int,
     fields.PositiveSmallIntegerField: int,
     fields.SlugField: str,
-    fields.SmallAutoField: strawberry.ID,
     fields.SmallIntegerField: int,
     fields.TextField: str,
     fields.TimeField: datetime.time,
@@ -80,6 +79,9 @@ field_type_map = {
     fields.related.ManyToManyField: List[DjangoModelType],
     fields.reverse_related.ManyToManyRel: List[DjangoModelType],
 }
+
+if django.VERSION >= (3, 0):
+    field_type_map[fields.SmallAutoField] = strawberry.ID
 
 if django.VERSION >= (3, 1):
     field_type_map.update({

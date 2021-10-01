@@ -12,7 +12,7 @@ classifiers = [ "Topic :: Software Development :: Libraries", "Topic :: Software
 
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
-Django = ">=3.0"
+Django = ">=2.2"
 strawberry-graphql = ">=0.69.0"
 
 [tool.poetry.dev-dependencies]
