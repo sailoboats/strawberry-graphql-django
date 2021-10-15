@@ -12,6 +12,7 @@ from .fields.types import (
     is_optional,
     get_model_field, resolve_model_field_type, resolve_model_field_name, auto,
 )
+from .pagination import PaginationConfigArgType
 
 _type = type
 
@@ -118,9 +119,19 @@ class StrawberryDjangoType:
     filters: Any
     order: Any
     pagination: Any
+    pagination_config: PaginationConfigArgType
 
 
-def process_type(cls, model, *, filters=UNSET, pagination=UNSET, order=UNSET, **kwargs):
+def process_type(
+    cls,
+    model,
+    *,
+    filters=UNSET,
+    pagination=UNSET,
+    pagination_config: PaginationConfigArgType = UNSET,
+    order=UNSET,
+    **kwargs,
+):
     original_annotations = cls.__dict__.get('__annotations__', {})
 
     django_type = StrawberryDjangoType(
@@ -132,6 +143,7 @@ def process_type(cls, model, *, filters=UNSET, pagination=UNSET, order=UNSET, **
         filters=filters,
         order=order,
         pagination=pagination,
+        pagination_config=pagination_config,
     )
 
     fields = get_fields(django_type)
