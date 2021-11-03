@@ -15,6 +15,7 @@ class PaginationConfig:
     default_offset: int = 0
     default_limit: Optional[int] = None
     max_limit: Optional[int] = None
+    is_optional: bool = True
 
 
 PaginationConfigArgType = Union[PaginationConfig, None, UNSET.__class__]
@@ -71,8 +72,10 @@ class StrawberryDjangoPagination:
         if not self.base_resolver:
             pagination = self.get_pagination()
             if pagination and not is_unset(pagination):
+                pagination_config = self.get_pagination_config()
+                is_optional = getattr(pagination_config, "is_optional", True)
                 arguments.append(
-                    argument('pagination', OffsetPaginationInput)
+                    argument('pagination', OffsetPaginationInput, is_optional)
                 )
         return super().arguments + arguments
 

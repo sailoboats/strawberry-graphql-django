@@ -25,6 +25,9 @@ class Query:
     fruits_paginated_by_default: List[Fruit] = strawberry_django.field(
         pagination_config=PaginationConfig(default_offset=1, default_limit=1),
     )
+    fruits_pagination_required: List[Fruit] = strawberry_django.field(
+        pagination_config=PaginationConfig(is_optional=False),
+    )
     fruits_at_most_one: List[Fruit] = strawberry_django.field(
         pagination_config=PaginationConfig(max_limit=1)
     )
@@ -74,3 +77,9 @@ def test_pagination_max_limit_with_too_big_limit(query, fruits):
     result = query('{ fruitsAtMostOne(pagination: { limit: 3 }) { name } }')
     assert not result.errors
     assert len(result.data['fruitsAtMostOne']) == 1
+
+def test_pagination_required(query, fruits):
+    result = query('{ fruitsPaginationRequired { name } }')
+    assert result.errors
+    assert len(result.errors) == 1
+    assert "'OffsetPaginationInput!' is required" in result.errors[0].message
