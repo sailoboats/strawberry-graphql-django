@@ -1,10 +1,8 @@
 import dataclasses
-import strawberry
-from strawberry.annotation import StrawberryAnnotation
-from strawberry.arguments import UNSET, is_unset, StrawberryArgument
 from typing import List, Optional, Union
 
-from strawberry.type import StrawberryContainer
+import strawberry
+from strawberry.arguments import UNSET, StrawberryArgument, is_unset
 
 from . import utils
 from .arguments import argument
@@ -25,6 +23,7 @@ PaginationConfigArgType = Union[PaginationConfig, None, UNSET.__class__]
 class OffsetPaginationInput:
     offset: int = 0
     limit: int = -1
+
 
 def apply(pagination, pagination_config, queryset):
     offset = None
@@ -55,6 +54,7 @@ def apply(pagination, pagination_config, queryset):
 
     return queryset
 
+
 class StrawberryDjangoPagination:
     def __init__(
         self,
@@ -75,7 +75,7 @@ class StrawberryDjangoPagination:
                 pagination_config = self.get_pagination_config()
                 is_optional = getattr(pagination_config, "is_optional", True)
                 arguments.append(
-                    argument('pagination', OffsetPaginationInput, is_optional)
+                    argument("pagination", OffsetPaginationInput, is_optional)
                 )
         return super().arguments + arguments
 

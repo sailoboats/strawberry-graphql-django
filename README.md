@@ -4,7 +4,7 @@
 [![PyPI](https://img.shields.io/pypi/v/strawberry-graphql-django)](https://pypi.org/project/strawberry-graphql-django/)
 [![Downloads](https://pepy.tech/badge/strawberry-graphql-django)](https://pepy.tech/project/strawberry-graphql-django)
 
-This package provides simple and powerful tools to generate GraphQL types, queries, mutations and resolvers from Django models.
+This package provides powerful tools to generate GraphQL types, queries, mutations and resolvers from Django models.
 
 Installing `strawberry-graphql-django` package from the python package repository.
 ```shell
@@ -115,9 +115,18 @@ import strawberry.django
 ```
 
 ## Running unit tests
-```
+
+```shell
 poetry install
 poetry run pytest
+```
+
+## Pre commit hooks
+
+We have a configuration for pre-commit, to add the hook run the following command:
+
+```shell
+pre-commit install
 ```
 
 ## Contributing

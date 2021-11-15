@@ -1,22 +1,25 @@
+from typing import List
+
 import pytest
 import strawberry
+
 import strawberry_django
 from strawberry_django import auto
 from strawberry_django.pagination import PaginationConfig
-from typing import List
+from tests import models, utils
 
-from tests import utils, models
 
 @strawberry_django.type(models.Fruit, pagination=True)
 class Fruit:
     name: auto
+
 
 @strawberry_django.type(models.Fruit, pagination=True)
 class BerryFruit:
     name: auto
 
     def get_queryset(self, queryset, info, **kwargs):
-        return queryset.filter(name__contains='berry')
+        return queryset.filter(name__contains="berry")
 
 
 @strawberry.type
@@ -33,53 +36,60 @@ class Query:
     )
     berries: List[BerryFruit] = strawberry_django.field()
 
+
 @pytest.fixture
 def query():
     return utils.generate_query(Query)
 
 
 def test_pagination(query, fruits):
-    result = query('{ fruits(pagination: { offset: 1, limit:1 }) { name } }')
+    result = query("{ fruits(pagination: { offset: 1, limit:1 }) { name } }")
     assert not result.errors
-    assert result.data['fruits'] == [
-        { 'name': 'raspberry'},
+    assert result.data["fruits"] == [
+        {"name": "raspberry"},
     ]
+
 
 def test_pagination_of_filtered_query(query, fruits):
-    result = query('{ berries(pagination: { offset: 1, limit:1 }) { name } }')
+    result = query("{ berries(pagination: { offset: 1, limit:1 }) { name } }")
     assert not result.errors
-    assert result.data['berries'] == [
-        { 'name': 'raspberry'},
+    assert result.data["berries"] == [
+        {"name": "raspberry"},
     ]
+
 
 def test_pagination_default_offset_and_limit(query, fruits):
-    result = query('{ fruitsPaginatedByDefault { name } }')
+    result = query("{ fruitsPaginatedByDefault { name } }")
     assert not result.errors
-    assert result.data['fruitsPaginatedByDefault'] == [
-        { 'name': 'raspberry'},
+    assert result.data["fruitsPaginatedByDefault"] == [
+        {"name": "raspberry"},
     ]
+
 
 def test_pagination_max_limit(query, fruits):
-    result = query('{ fruitsAtMostOne { name } }')
+    result = query("{ fruitsAtMostOne { name } }")
     assert not result.errors
-    assert result.data['fruitsAtMostOne'] == [
-        { 'name': 'strawberry'},
+    assert result.data["fruitsAtMostOne"] == [
+        {"name": "strawberry"},
     ]
+
 
 def test_pagination_max_limit_with_offset(query, fruits):
-    result = query('{ fruitsAtMostOne(pagination: { offset: 1 }) { name } }')
+    result = query("{ fruitsAtMostOne(pagination: { offset: 1 }) { name } }")
     assert not result.errors
-    assert result.data['fruitsAtMostOne'] == [
-        { 'name': 'raspberry'},
+    assert result.data["fruitsAtMostOne"] == [
+        {"name": "raspberry"},
     ]
 
+
 def test_pagination_max_limit_with_too_big_limit(query, fruits):
-    result = query('{ fruitsAtMostOne(pagination: { limit: 3 }) { name } }')
+    result = query("{ fruitsAtMostOne(pagination: { limit: 3 }) { name } }")
     assert not result.errors
-    assert len(result.data['fruitsAtMostOne']) == 1
+    assert len(result.data["fruitsAtMostOne"]) == 1
+
 
 def test_pagination_required(query, fruits):
-    result = query('{ fruitsPaginationRequired { name } }')
+    result = query("{ fruitsPaginationRequired { name } }")
     assert result.errors
     assert len(result.errors) == 1
     assert "'OffsetPaginationInput!' is required" in result.errors[0].message
