@@ -5,7 +5,6 @@ import strawberry
 
 import strawberry_django
 from strawberry_django import auto
-from strawberry_django.pagination import PaginationConfig
 from tests import models, utils
 
 
@@ -25,15 +24,6 @@ class BerryFruit:
 @strawberry.type
 class Query:
     fruits: List[Fruit] = strawberry_django.field()
-    fruits_paginated_by_default: List[Fruit] = strawberry_django.field(
-        pagination_config=PaginationConfig(default_offset=1, default_limit=1),
-    )
-    fruits_pagination_required: List[Fruit] = strawberry_django.field(
-        pagination_config=PaginationConfig(is_optional=False),
-    )
-    fruits_at_most_one: List[Fruit] = strawberry_django.field(
-        pagination_config=PaginationConfig(max_limit=1)
-    )
     berries: List[BerryFruit] = strawberry_django.field()
 
 
@@ -56,40 +46,3 @@ def test_pagination_of_filtered_query(query, fruits):
     assert result.data["berries"] == [
         {"name": "raspberry"},
     ]
-
-
-def test_pagination_default_offset_and_limit(query, fruits):
-    result = query("{ fruitsPaginatedByDefault { name } }")
-    assert not result.errors
-    assert result.data["fruitsPaginatedByDefault"] == [
-        {"name": "raspberry"},
-    ]
-
-
-def test_pagination_max_limit(query, fruits):
-    result = query("{ fruitsAtMostOne { name } }")
-    assert not result.errors
-    assert result.data["fruitsAtMostOne"] == [
-        {"name": "strawberry"},
-    ]
-
-
-def test_pagination_max_limit_with_offset(query, fruits):
-    result = query("{ fruitsAtMostOne(pagination: { offset: 1 }) { name } }")
-    assert not result.errors
-    assert result.data["fruitsAtMostOne"] == [
-        {"name": "raspberry"},
-    ]
-
-
-def test_pagination_max_limit_with_too_big_limit(query, fruits):
-    result = query("{ fruitsAtMostOne(pagination: { limit: 3 }) { name } }")
-    assert not result.errors
-    assert len(result.data["fruitsAtMostOne"]) == 1
-
-
-def test_pagination_required(query, fruits):
-    result = query("{ fruitsPaginationRequired { name } }")
-    assert result.errors
-    assert len(result.errors) == 1
-    assert "'OffsetPaginationInput!' is required" in result.errors[0].message
